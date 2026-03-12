@@ -6,6 +6,8 @@ import { listMembers } from './tools/members'
 import { listMilestones } from './tools/milestones'
 import { listTeamspaces, listDocuments } from './tools/documents'
 import { searchIssues } from './tools/search'
+import { listLabels, createLabel, addLabel, removeLabel } from './tools/labels'
+import { addRelation, addBlockedBy, setParent } from './tools/relations'
 import {
   GetProjectSchema,
   ListIssuesSchema,
@@ -15,11 +17,18 @@ import {
   AddCommentSchema,
   ListMilestonesSchema,
   ListDocumentsSchema,
-  SearchIssuesSchema
+  SearchIssuesSchema,
+  ListLabelsSchema,
+  CreateLabelSchema,
+  AddLabelSchema,
+  RemoveLabelSchema,
+  AddRelationSchema,
+  AddBlockedBySchema,
+  SetParentSchema
 } from './schemas'
 
 export function createServer (): McpServer {
-  const server = new McpServer({ name: 'huly-mcp', version: '0.1.0' })
+  const server = new McpServer({ name: 'huly-mcp', version: '0.2.0' })
 
   // Projects
   server.tool('list_projects', 'List all projects in the Huly workspace', {}, listProjects)
@@ -33,6 +42,17 @@ export function createServer (): McpServer {
 
   // Comments
   server.tool('add_comment', 'Add a comment to an issue', AddCommentSchema.shape, addComment)
+
+  // Labels
+  server.tool('list_labels', 'List all labels in the workspace', ListLabelsSchema.shape, listLabels)
+  server.tool('create_label', 'Create a new label with an optional hex color', CreateLabelSchema.shape, createLabel)
+  server.tool('add_label', 'Add a label to an issue (auto-creates the label if it does not exist)', AddLabelSchema.shape, addLabel)
+  server.tool('remove_label', 'Remove a label from an issue', RemoveLabelSchema.shape, removeLabel)
+
+  // Relations
+  server.tool('add_relation', 'Mark two issues as related to each other (bidirectional)', AddRelationSchema.shape, addRelation)
+  server.tool('add_blocked_by', 'Mark an issue as blocked by another issue', AddBlockedBySchema.shape, addBlockedBy)
+  server.tool('set_parent', 'Set or clear the parent (epic) of an issue', SetParentSchema.shape, setParent)
 
   // Members
   server.tool('list_members', 'List all members in the workspace', {}, listMembers)

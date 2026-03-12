@@ -127,8 +127,12 @@ async function main () {
     process.exit(1)
   }
 
-  // Load statuses
-  const statuses = await client.findAll(tracker.default.class.IssueStatus, { space: project._id })
+  // Load statuses — Huly stores them in project space OR global model space
+  let statuses = await client.findAll(tracker.default.class.IssueStatus, { space: project._id })
+  if (statuses.length === 0) {
+    // Fall back to global model-level statuses (used by default project types)
+    statuses = await client.findAll(tracker.default.class.IssueStatus, {})
+  }
   const statusMap = new Map(statuses.map(s => [s.name.toLowerCase(), s]))
   const defaultStatus = project.defaultIssueStatus != null
     ? (statuses.find(s => s._id === project.defaultIssueStatus) ?? statuses[0])
