@@ -30,37 +30,89 @@ async function connect (): Promise<ConnectionState> {
   const email = process.env.HULY_EMAIL
   const password = process.env.HULY_PASSWORD
   const workspaceUrl = process.env.HULY_WORKSPACE
+  const hulyToken = process.env.HULY_TOKEN
   const accountsUrl = process.env.HULY_ACCOUNTS_URL ?? 'https://account.huly.app'
 
-  if (email == null || password == null || workspaceUrl == null) {
-    throw new Error('Missing required env vars: HULY_EMAIL, HULY_PASSWORD, HULY_WORKSPACE')
+  if (workspaceUrl == null) {
+    throw new Error('Missing required env var: HULY_WORKSPACE')
   }
 
-  // Step 1: login → get token + socialId
-  const unauthClient = getRawAccountClient(accountsUrl)
-  const loginInfo = await unauthClient.login(email, password)
+  let socialId: PersonId
+  let endpoint: string
+  let wsToken: string
 
-  if (loginInfo.token == null) {
-    throw new Error('Login failed: no token returned. Check credentials.')
-  }
-  if (loginInfo.socialId == null) {
-    throw new Error('Login failed: no socialId returned.')
-  }
+  if (hulyToken != null) {
+    // Token-based auth — for SSO accounts (Google/GitHub login on huly.app)
+    // Get the token from your browser: huly.app → DevTools → Application →
+    // Local Storage → huly.app → look for the key "token"
+    const authedClient = getRawAccountClient(accountsUrl, hulyToken)
+    const info = await authedClient.getLoginInfoByToken()
 
-  // Step 2: select workspace → get WS endpoint + workspace token
-  const authedAccountClient = getRawAccountClient(accountsUrl, loginInfo.token)
-  const wsInfo = await authedAccountClient.selectWorkspace(workspaceUrl, 'external')
+    if (info == null) {
+      throw new Error('HULY_TOKEN is invalid or expired. Please get a fresh token from huly.app DevTools.')
+    }
 
-  if (wsInfo.endpoint == null || wsInfo.token == null) {
-    throw new Error(`Workspace '${workspaceUrl}' not found or not accessible.`)
+    if ('endpoint' in info && info.endpoint != null) {
+      // It's a WorkspaceLoginInfo — already has endpoint + workspace token
+      if (info.socialId == null) {
+        throw new Error('Token auth: no socialId in token. Try a workspace-scoped token.')
+      }
+      socialId = info.socialId as PersonId
+      endpoint = info.endpoint
+      wsToken = info.token!
+    } else if ('token' in info && info.token != null) {
+      // It's a plain LoginInfo (account-level token) — still need selectWorkspace
+      if (info.socialId == null) {
+        throw new Error('Token auth: no socialId returned.')
+      }
+      socialId = info.socialId as PersonId
+      const wsInfo = await authedClient.selectWorkspace(workspaceUrl, 'external')
+      if (wsInfo.endpoint == null || wsInfo.token == null) {
+        throw new Error(`Workspace '${workspaceUrl}' not found or not accessible.`)
+      }
+      endpoint = wsInfo.endpoint
+      wsToken = wsInfo.token
+    } else {
+      throw new Error('Token auth: unexpected response from getLoginInfoByToken. Token may be incomplete.')
+    }
+  } else {
+    // Email + password auth — for accounts with a password set on huly.app
+    if (email == null || password == null) {
+      throw new Error(
+        'Missing credentials. Provide HULY_TOKEN (for SSO accounts) or both HULY_EMAIL and HULY_PASSWORD.'
+      )
+    }
+
+    // Step 1: login → get account token + socialId
+    const unauthClient = getRawAccountClient(accountsUrl)
+    const loginInfo = await unauthClient.login(email, password)
+
+    if (loginInfo.token == null) {
+      throw new Error('Login failed: no token returned. Check credentials.')
+    }
+    if (loginInfo.socialId == null) {
+      throw new Error('Login failed: no socialId returned.')
+    }
+
+    // Step 2: select workspace → get WS endpoint + workspace token
+    const authedAccountClient = getRawAccountClient(accountsUrl, loginInfo.token)
+    const wsInfo = await authedAccountClient.selectWorkspace(workspaceUrl, 'external')
+
+    if (wsInfo.endpoint == null || wsInfo.token == null) {
+      throw new Error(`Workspace '${workspaceUrl}' not found or not accessible.`)
+    }
+
+    socialId = loginInfo.socialId as PersonId
+    endpoint = wsInfo.endpoint
+    wsToken = wsInfo.token
   }
 
   // Step 3: open WebSocket connection
-  const rawConnection = await createClient(wsInfo.endpoint, wsInfo.token)
-  const txClient = new TxOperations(rawConnection, loginInfo.socialId as PersonId)
+  const rawConnection = await createClient(endpoint, wsToken)
+  const txClient = new TxOperations(rawConnection, socialId)
 
   // Build workspace-scoped account client for member lookups
-  const accountClient = getRawAccountClient(accountsUrl, wsInfo.token)
+  const accountClient = getRawAccountClient(accountsUrl, wsToken)
 
   return { txClient, rawConnection, accountClient }
 }

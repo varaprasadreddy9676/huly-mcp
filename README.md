@@ -45,13 +45,37 @@ npm run build
 
 ## Configuration
 
-Copy `.env.example` to `.env` and fill in your credentials:
+### Option A — Token auth (recommended for Google / GitHub SSO accounts)
+
+If you signed up to huly.app with Google or GitHub, you don't have a password — use a token instead.
+
+**How to get your token:**
+1. Open [huly.app](https://huly.app) in Chrome and sign in
+2. Open DevTools (`F12` / `Cmd+Option+I`)
+3. Go to **Application** → **Local Storage** → `https://huly.app`
+4. Find the key named **`token`** and copy its value
+
+```bash
+HULY_WORKSPACE=your-workspace-slug   # e.g. "myteam" from huly.app/myteam
+HULY_TOKEN=your-token-here
+```
+
+> **Note:** Tokens expire. If you get an auth error, repeat the steps above to get a fresh token.
+
+### Option B — Email + password auth
+
+Only works if you set a password on your huly.app account (Profile → Security → Set password).
 
 ```bash
 HULY_EMAIL=your-email@example.com
 HULY_PASSWORD=your-password
-HULY_WORKSPACE=your-workspace-slug   # e.g. "myteam" from huly.app/myteam
-HULY_ACCOUNTS_URL=https://account.huly.app  # optional, this is the default
+HULY_WORKSPACE=your-workspace-slug
+```
+
+### Optional
+
+```bash
+HULY_ACCOUNTS_URL=https://account.huly.app   # default; change for self-hosted instances
 ```
 
 ---
@@ -63,6 +87,23 @@ Add the following to your Claude Desktop config file:
 **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
+**With token auth (SSO):**
+```json
+{
+  "mcpServers": {
+    "huly": {
+      "command": "node",
+      "args": ["/absolute/path/to/huly-mcp/dist/index.js"],
+      "env": {
+        "HULY_TOKEN": "your-token-here",
+        "HULY_WORKSPACE": "your-workspace-slug"
+      }
+    }
+  }
+}
+```
+
+**With email + password:**
 ```json
 {
   "mcpServers": {
@@ -72,8 +113,7 @@ Add the following to your Claude Desktop config file:
       "env": {
         "HULY_EMAIL": "your@email.com",
         "HULY_PASSWORD": "yourpassword",
-        "HULY_WORKSPACE": "your-workspace-slug",
-        "HULY_ACCOUNTS_URL": "https://account.huly.app"
+        "HULY_WORKSPACE": "your-workspace-slug"
       }
     }
   }
@@ -101,6 +141,7 @@ Once connected, you can ask Claude things like:
 
 - **Single long-lived WebSocket connection** — connects once per process via `@hcengineering/server-client`, not per tool call
 - **Lazy init** — connects on the first tool call so auth errors surface clearly in Claude
+- **Dual auth** — supports both email/password and token-based auth (for SSO accounts)
 - **Stdio transport** — standard MCP transport, works with Claude Desktop and any MCP client
 
 ---
