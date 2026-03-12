@@ -1,14 +1,42 @@
 {
-  "name": "huly-mcp",
+  "name": "huly-mcp-sdk",
   "version": "0.1.0",
-  "description": "MCP server for Huly project management platform",
+  "description": "MCP server for Huly — connect Claude Desktop to your Huly workspace via the native WebSocket SDK",
+  "keywords": [
+    "huly",
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "project-management",
+    "issue-tracker",
+    "anthropic"
+  ],
+  "homepage": "https://github.com/varaprasadreddy9676/huly-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/varaprasadreddy9676/huly-mcp.git"
+  },
+  "license": "EPL-2.0",
+  "author": "SaiVaraprasad Medapati",
   "bin": {
-    "huly-mcp": "./dist/index.js"
+    "huly-mcp": "./dist/index.js",
+    "huly-mcp-setup": "./scripts/setup.js"
+  },
+  "files": [
+    "dist/",
+    "scripts/",
+    ".env.example",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
   },
   "scripts": {
     "build": "node --max-old-space-size=4096 node_modules/typescript/bin/tsc",
     "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "setup": "node scripts/setup.js",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@hcengineering/account-client": "^0.7.0",
