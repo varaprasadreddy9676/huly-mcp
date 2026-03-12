@@ -25,6 +25,10 @@ export const CreateIssueSchema = z.object({
   dueDate: z.string().optional().describe('Due date as ISO 8601 string, e.g. "2026-04-01"')
 })
 
+export const DeleteIssueSchema = z.object({
+  identifier: z.string().describe('Issue identifier to delete, e.g. "PROJ-123"')
+})
+
 export const UpdateIssueSchema = z.object({
   identifier: z.string().describe('Issue identifier, e.g. "PROJ-123"'),
   title: z.string().optional().describe('New title'),

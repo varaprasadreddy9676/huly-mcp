@@ -6,7 +6,7 @@ Connects **Claude Desktop** (and any [MCP](https://modelcontextprotocol.io)-comp
 
 ---
 
-## Tools (19 total)
+## Tools (20 total)
 
 | Category | Tool | Description |
 |----------|------|-------------|
@@ -16,6 +16,7 @@ Connects **Claude Desktop** (and any [MCP](https://modelcontextprotocol.io)-comp
 | | `get_issue` | Get full details of an issue (e.g. `PROJ-42`) |
 | | `create_issue` | Create a new issue |
 | | `update_issue` | Update title, status, priority, assignee, or due date |
+| | `delete_issue` | Permanently delete an issue by identifier |
 | **Comments** | `add_comment` | Add a comment to an issue |
 | **Labels** | `list_labels` | List all labels in the workspace with color + usage count |
 | | `create_label` | Create a new label with an optional hex color |

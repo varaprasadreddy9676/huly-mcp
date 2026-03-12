@@ -10,7 +10,8 @@ import type {
   ListIssuesSchema,
   GetIssueSchema,
   CreateIssueSchema,
-  UpdateIssueSchema
+  UpdateIssueSchema,
+  DeleteIssueSchema
 } from '../schemas'
 
 export const listIssues = wrapToolHandler<z.infer<typeof ListIssuesSchema>>(async (args) => {
@@ -144,6 +145,23 @@ export const createIssue = wrapToolHandler<z.infer<typeof CreateIssueSchema>>(as
   )
 
   return `✅ Created **${identifier}**: ${args.title}\nStatus: ${status.name} | Priority: ${priorityLabel(IssuePriority[args.priority as keyof typeof IssuePriority])}`
+})
+
+export const deleteIssue = wrapToolHandler<z.infer<typeof DeleteIssueSchema>>(async (args) => {
+  const client = await getConnection()
+  const issue = await client.findOne(tracker.class.Issue, { identifier: args.identifier })
+  if (issue == null) throw new Error(`Issue '${args.identifier}' not found.`)
+
+  await client.removeCollection(
+    tracker.class.Issue,
+    issue.space,
+    issue._id,
+    issue.attachedTo,
+    issue.attachedToClass,
+    issue.collection
+  )
+
+  return `✅ Deleted **${args.identifier}**: ${issue.title}`
 })
 
 export const updateIssue = wrapToolHandler<z.infer<typeof UpdateIssueSchema>>(async (args) => {
