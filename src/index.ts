@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { createServer } from './server.js'
-import { closeConnection } from './connection.js'
+import { createServer } from './server'
+import { closeConnection } from './connection'
 
 async function main (): Promise<void> {
   const server = createServer()

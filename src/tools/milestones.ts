@@ -1,9 +1,9 @@
 import tracker from '@hcengineering/tracker'
-import { getConnection } from '../connection.js'
-import { wrapToolHandler } from '../utils/errors.js'
-import { MILESTONE_STATUS_LABELS, formatDate } from '../utils/format.js'
+import { getConnection } from '../connection'
+import { wrapToolHandler } from '../utils/errors'
+import { MILESTONE_STATUS_LABELS, formatDate } from '../utils/format'
 import type { z } from 'zod'
-import type { ListMilestonesSchema } from '../schemas.js'
+import type { ListMilestonesSchema } from '../schemas'
 
 export const listMilestones = wrapToolHandler<z.infer<typeof ListMilestonesSchema>>(async (args) => {
   const client = await getConnection()

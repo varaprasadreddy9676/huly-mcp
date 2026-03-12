@@ -2,12 +2,11 @@
   "name": "huly-mcp",
   "version": "0.1.0",
   "description": "MCP server for Huly project management platform",
-  "type": "module",
   "bin": {
     "huly-mcp": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node --max-old-space-size=4096 node_modules/typescript/bin/tsc",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js"
   },

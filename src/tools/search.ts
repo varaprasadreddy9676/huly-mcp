@@ -1,9 +1,9 @@
 import tracker from '@hcengineering/tracker'
-import { getConnection } from '../connection.js'
-import { wrapToolHandler } from '../utils/errors.js'
-import { priorityLabel, formatDate } from '../utils/format.js'
+import { getConnection } from '../connection'
+import { wrapToolHandler } from '../utils/errors'
+import { priorityLabel, formatDate } from '../utils/format'
 import type { z } from 'zod'
-import type { SearchIssuesSchema } from '../schemas.js'
+import type { SearchIssuesSchema } from '../schemas'
 
 export const searchIssues = wrapToolHandler<z.infer<typeof SearchIssuesSchema>>(async (args) => {
   const client = await getConnection()

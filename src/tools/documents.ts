@@ -1,9 +1,9 @@
 import document from '@hcengineering/document'
 import { SortingOrder, type Ref } from '@hcengineering/core'
-import { getConnection } from '../connection.js'
-import { wrapToolHandler } from '../utils/errors.js'
+import { getConnection } from '../connection'
+import { wrapToolHandler } from '../utils/errors'
 import type { z } from 'zod'
-import type { ListDocumentsSchema } from '../schemas.js'
+import type { ListDocumentsSchema } from '../schemas'
 import type { Teamspace } from '@hcengineering/document'
 
 export const listTeamspaces = wrapToolHandler<Record<string, never>>(async () => {

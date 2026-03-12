@@ -1,11 +1,11 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { listProjects, getProject } from './tools/projects.js'
-import { listIssues, getIssue, createIssue, updateIssue } from './tools/issues.js'
-import { addComment } from './tools/comments.js'
-import { listMembers } from './tools/members.js'
-import { listMilestones } from './tools/milestones.js'
-import { listTeamspaces, listDocuments } from './tools/documents.js'
-import { searchIssues } from './tools/search.js'
+import { listProjects, getProject } from './tools/projects'
+import { listIssues, getIssue, createIssue, updateIssue } from './tools/issues'
+import { addComment } from './tools/comments'
+import { listMembers } from './tools/members'
+import { listMilestones } from './tools/milestones'
+import { listTeamspaces, listDocuments } from './tools/documents'
+import { searchIssues } from './tools/search'
 import {
   GetProjectSchema,
   ListIssuesSchema,
@@ -16,7 +16,7 @@ import {
   ListMilestonesSchema,
   ListDocumentsSchema,
   SearchIssuesSchema
-} from './schemas.js'
+} from './schemas'
 
 export function createServer (): McpServer {
   const server = new McpServer({ name: 'huly-mcp', version: '0.1.0' })

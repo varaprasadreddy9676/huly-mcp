@@ -1,5 +1,5 @@
-import { getAccountClient } from '../connection.js'
-import { wrapToolHandler } from '../utils/errors.js'
+import { getAccountClient } from '../connection'
+import { wrapToolHandler } from '../utils/errors'
 
 export const listMembers = wrapToolHandler<Record<string, never>>(async () => {
   const accountClient = await getAccountClient()

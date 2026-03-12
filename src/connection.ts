@@ -30,7 +30,7 @@ async function connect (): Promise<ConnectionState> {
   const email = process.env.HULY_EMAIL
   const password = process.env.HULY_PASSWORD
   const workspaceUrl = process.env.HULY_WORKSPACE
-  const accountsUrl = process.env.HULY_ACCOUNTS_URL ?? 'https://huly.app/account'
+  const accountsUrl = process.env.HULY_ACCOUNTS_URL ?? 'https://account.huly.app'
 
   if (email == null || password == null || workspaceUrl == null) {
     throw new Error('Missing required env vars: HULY_EMAIL, HULY_PASSWORD, HULY_WORKSPACE')

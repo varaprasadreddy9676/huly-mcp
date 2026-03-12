@@ -1,8 +1,8 @@
 import tracker from '@hcengineering/tracker'
-import { getConnection } from '../connection.js'
-import { wrapToolHandler } from '../utils/errors.js'
+import { getConnection } from '../connection'
+import { wrapToolHandler } from '../utils/errors'
 import type { z } from 'zod'
-import type { GetProjectSchema } from '../schemas.js'
+import type { GetProjectSchema } from '../schemas'
 
 export const listProjects = wrapToolHandler<Record<string, never>>(async () => {
   const client = await getConnection()

@@ -51,7 +51,7 @@ Copy `.env.example` to `.env` and fill in your credentials:
 HULY_EMAIL=your-email@example.com
 HULY_PASSWORD=your-password
 HULY_WORKSPACE=your-workspace-slug   # e.g. "myteam" from huly.app/myteam
-HULY_ACCOUNTS_URL=https://huly.app/account  # optional, this is the default
+HULY_ACCOUNTS_URL=https://account.huly.app  # optional, this is the default
 ```
 
 ---
@@ -73,7 +73,7 @@ Add the following to your Claude Desktop config file:
         "HULY_EMAIL": "your@email.com",
         "HULY_PASSWORD": "yourpassword",
         "HULY_WORKSPACE": "your-workspace-slug",
-        "HULY_ACCOUNTS_URL": "https://huly.app/account"
+        "HULY_ACCOUNTS_URL": "https://account.huly.app"
       }
     }
   }

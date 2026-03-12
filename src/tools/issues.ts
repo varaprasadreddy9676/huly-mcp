@@ -2,16 +2,16 @@ import tracker, { IssuePriority, type Issue } from '@hcengineering/tracker'
 import task from '@hcengineering/task'
 import { SortingOrder, generateId, type Ref, type DocumentUpdate } from '@hcengineering/core'
 import { makeRank } from '@hcengineering/rank'
-import { getConnection } from '../connection.js'
-import { wrapToolHandler } from '../utils/errors.js'
-import { priorityLabel, formatDate } from '../utils/format.js'
+import { getConnection } from '../connection'
+import { wrapToolHandler } from '../utils/errors'
+import { priorityLabel, formatDate } from '../utils/format'
 import type { z } from 'zod'
 import type {
   ListIssuesSchema,
   GetIssueSchema,
   CreateIssueSchema,
   UpdateIssueSchema
-} from '../schemas.js'
+} from '../schemas'
 
 export const listIssues = wrapToolHandler<z.infer<typeof ListIssuesSchema>>(async (args) => {
   const client = await getConnection()
