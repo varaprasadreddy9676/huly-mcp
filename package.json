@@ -1,6 +1,6 @@
 {
   "name": "huly-mcp-sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MCP server for Huly — connect Claude Desktop to your Huly workspace via the native WebSocket SDK",
   "keywords": [
     "huly",
@@ -16,11 +16,12 @@
     "type": "git",
     "url": "git+https://github.com/varaprasadreddy9676/huly-mcp.git"
   },
+  "mcpName": "io.github.varaprasadreddy9676/huly-mcp",
   "license": "EPL-2.0",
   "author": "SaiVaraprasad Medapati",
   "bin": {
-    "huly-mcp": "./dist/index.js",
-    "huly-mcp-setup": "./scripts/setup.js"
+    "huly-mcp": "dist/index.js",
+    "huly-mcp-setup": "scripts/setup.js"
   },
   "files": [
     "dist/",

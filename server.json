@@ -1,0 +1,44 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.varaprasadreddy9676/huly-mcp",
+  "description": "MCP server for Huly — manage issues, projects, members and more via Claude.",
+  "repository": {
+    "url": "https://github.com/varaprasadreddy9676/huly-mcp",
+    "source": "github",
+    "id": "1179678827"
+  },
+  "version": "0.2.2",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "huly-mcp-sdk",
+      "version": "0.2.2",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "HULY_URL",
+          "description": "WebSocket URL of your Huly instance (e.g. wss://huly.io)",
+          "isRequired": true,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "HULY_TOKEN",
+          "description": "Huly authentication token (from huly-mcp-setup)",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "HULY_WORKSPACE",
+          "description": "Your Huly workspace slug",
+          "isRequired": true,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
