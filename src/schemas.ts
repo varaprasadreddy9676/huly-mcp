@@ -34,7 +34,8 @@ export const UpdateIssueSchema = z.object({
   title: z.string().optional().describe('New title'),
   statusName: z.string().optional().describe('New status name'),
   priority: PriorityEnum.optional().describe('New priority'),
-  dueDate: z.string().nullable().optional().describe('New due date (ISO 8601) or null to clear')
+  dueDate: z.string().nullable().optional().describe('New due date (ISO 8601) or null to clear'),
+  assignee: z.string().nullable().optional().describe('Assignee name (first/last/full) or null to unassign')
 })
 
 export const AddCommentSchema = z.object({
@@ -44,6 +45,32 @@ export const AddCommentSchema = z.object({
 
 export const ListMilestonesSchema = z.object({
   projectIdentifier: z.string().describe('Project identifier, e.g. "PROJ"')
+})
+
+const MilestoneStatusEnum = z.enum(['Planned', 'InProgress', 'Completed', 'Canceled'])
+
+export const CreateMilestoneSchema = z.object({
+  projectIdentifier: z.string().describe('Project identifier, e.g. "PROJ"'),
+  label: z.string().min(1).describe('Milestone name'),
+  targetDate: z.string().describe('Target date as ISO 8601 string, e.g. "2026-06-01"'),
+  status: MilestoneStatusEnum.default('Planned').describe('Milestone status')
+})
+
+export const ListComponentsSchema = z.object({
+  projectIdentifier: z.string().describe('Project identifier, e.g. "PROJ"')
+})
+
+export const CreateComponentSchema = z.object({
+  projectIdentifier: z.string().describe('Project identifier, e.g. "PROJ"'),
+  label: z.string().min(1).describe('Component name'),
+  description: z.string().optional().describe('Component description'),
+  lead: z.string().optional().describe('Lead member name (first/last/full)')
+})
+
+export const CreateProjectSchema = z.object({
+  name: z.string().min(1).describe('Project name, e.g. "My Project"'),
+  identifier: z.string().min(1).max(5).regex(/^[A-Z]+$/).describe('Short ALL-CAPS identifier, e.g. "MYPROJ"'),
+  description: z.string().optional().describe('Project description')
 })
 
 export const ListDocumentsSchema = z.object({

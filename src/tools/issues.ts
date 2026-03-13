@@ -1,6 +1,8 @@
 import tracker, { IssuePriority, type Issue } from '@hcengineering/tracker'
 import task from '@hcengineering/task'
+import contact from '@hcengineering/contact'
 import { SortingOrder, generateId, type Ref, type DocumentUpdate } from '@hcengineering/core'
+import type { Person } from '@hcengineering/contact'
 import { makeRank } from '@hcengineering/rank'
 import { getConnection } from '../connection'
 import { wrapToolHandler } from '../utils/errors'
@@ -185,6 +187,20 @@ export const updateIssue = wrapToolHandler<z.infer<typeof UpdateIssueSchema>>(as
 
   if (args.dueDate !== undefined) {
     updates.dueDate = args.dueDate != null ? new Date(args.dueDate).getTime() : null
+  }
+
+  if (args.assignee !== undefined) {
+    if (args.assignee === null) {
+      updates.assignee = null
+    } else {
+      const employees = await client.findAll(contact.class.Member, {})
+      const match = employees.find((e) => {
+        const name: string = (e as any).name ?? ''
+        return name.toLowerCase().includes(args.assignee!.toLowerCase())
+      })
+      if (match == null) throw new Error(`Member '${args.assignee}' not found.`)
+      updates.assignee = match._id as unknown as Ref<Person>
+    }
   }
 
   if (Object.keys(updates).length === 0) return `No changes made to ${args.identifier}.`

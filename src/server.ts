@@ -1,15 +1,17 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { listProjects, getProject } from './tools/projects'
+import { listProjects, getProject, createProject } from './tools/projects'
 import { listIssues, getIssue, createIssue, updateIssue, deleteIssue } from './tools/issues'
 import { addComment } from './tools/comments'
 import { listMembers } from './tools/members'
-import { listMilestones } from './tools/milestones'
+import { listMilestones, createMilestone } from './tools/milestones'
 import { listTeamspaces, listDocuments } from './tools/documents'
 import { searchIssues } from './tools/search'
 import { listLabels, createLabel, addLabel, removeLabel } from './tools/labels'
 import { addRelation, addBlockedBy, setParent } from './tools/relations'
+import { listComponents, createComponent } from './tools/components'
 import {
   GetProjectSchema,
+  CreateProjectSchema,
   ListIssuesSchema,
   GetIssueSchema,
   CreateIssueSchema,
@@ -17,6 +19,7 @@ import {
   DeleteIssueSchema,
   AddCommentSchema,
   ListMilestonesSchema,
+  CreateMilestoneSchema,
   ListDocumentsSchema,
   SearchIssuesSchema,
   ListLabelsSchema,
@@ -25,21 +28,24 @@ import {
   RemoveLabelSchema,
   AddRelationSchema,
   AddBlockedBySchema,
-  SetParentSchema
+  SetParentSchema,
+  ListComponentsSchema,
+  CreateComponentSchema
 } from './schemas'
 
 export function createServer (): McpServer {
-  const server = new McpServer({ name: 'huly-mcp', version: '0.2.1' })
+  const server = new McpServer({ name: 'huly-mcp', version: '0.3.0' })
 
   // Projects
   server.tool('list_projects', 'List all projects in the Huly workspace', {}, listProjects)
   server.tool('get_project', 'Get a project by its identifier (e.g. "PROJ")', GetProjectSchema.shape, getProject)
+  server.tool('create_project', 'Create a new tracker project with a unique ALL-CAPS identifier', CreateProjectSchema.shape, createProject)
 
   // Issues
   server.tool('list_issues', 'List issues in a project with optional filters', ListIssuesSchema.shape, listIssues)
   server.tool('get_issue', 'Get full details of an issue by identifier (e.g. "PROJ-123")', GetIssueSchema.shape, getIssue)
   server.tool('create_issue', 'Create a new issue in a project', CreateIssueSchema.shape, createIssue)
-  server.tool('update_issue', 'Update an existing issue (title, status, priority, due date)', UpdateIssueSchema.shape, updateIssue)
+  server.tool('update_issue', 'Update an existing issue (title, status, priority, due date, assignee)', UpdateIssueSchema.shape, updateIssue)
   server.tool('delete_issue', 'Permanently delete an issue by identifier (e.g. "PROJ-123")', DeleteIssueSchema.shape, deleteIssue)
 
   // Comments
@@ -61,6 +67,11 @@ export function createServer (): McpServer {
 
   // Milestones
   server.tool('list_milestones', 'List milestones for a project', ListMilestonesSchema.shape, listMilestones)
+  server.tool('create_milestone', 'Create a new milestone in a project with a target date', CreateMilestoneSchema.shape, createMilestone)
+
+  // Components
+  server.tool('list_components', 'List components (sub-areas) in a project', ListComponentsSchema.shape, listComponents)
+  server.tool('create_component', 'Create a new component in a project', CreateComponentSchema.shape, createComponent)
 
   // Documents
   server.tool('list_teamspaces', 'List all document teamspaces in the workspace', {}, listTeamspaces)
