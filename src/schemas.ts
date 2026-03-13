@@ -77,6 +77,16 @@ export const ListDocumentsSchema = z.object({
   teamspaceId: z.string().describe('Teamspace _id from list_teamspaces')
 })
 
+export const GetDocumentSchema = z.object({
+  documentId: z.string().describe('Document _id from list_documents')
+})
+
+export const CreateDocumentSchema = z.object({
+  teamspaceId: z.string().describe('Teamspace _id from list_teamspaces'),
+  title: z.string().min(1).describe('Document title'),
+  parentId: z.string().optional().describe('Parent document _id (for nested docs); omit for top-level')
+})
+
 export const SearchIssuesSchema = z.object({
   query: z.string().min(1).describe('Search query'),
   limit: z.number().int().min(1).max(50).default(20).describe('Max results')

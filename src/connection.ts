@@ -6,6 +6,8 @@ interface ConnectionState {
   txClient: TxOperations
   rawConnection: Client
   accountClient: AccountClient
+  wsToken: string
+  workspaceUuid: string
 }
 
 let state: ConnectionState | null = null
@@ -26,6 +28,12 @@ export async function getAccountClient (): Promise<AccountClient> {
   return state!.accountClient
 }
 
+export async function getWorkspaceInfo (): Promise<{ wsToken: string, workspaceUuid: string }> {
+  if (state !== null) return { wsToken: state.wsToken, workspaceUuid: state.workspaceUuid }
+  await getConnection()
+  return { wsToken: state!.wsToken, workspaceUuid: state!.workspaceUuid }
+}
+
 async function connect (): Promise<ConnectionState> {
   const email = process.env.HULY_EMAIL
   const password = process.env.HULY_PASSWORD
@@ -40,6 +48,7 @@ async function connect (): Promise<ConnectionState> {
   let socialId: PersonId
   let endpoint: string
   let wsToken: string
+  let workspaceUuid: string = ''
 
   if (hulyToken != null) {
     // Token-based auth — for SSO accounts (Google/GitHub login on huly.app)
@@ -60,6 +69,7 @@ async function connect (): Promise<ConnectionState> {
       socialId = info.socialId as PersonId
       endpoint = info.endpoint
       wsToken = info.token!
+      workspaceUuid = String(info.workspace ?? '')
     } else if ('token' in info && info.token != null) {
       // It's a plain LoginInfo (account-level token) — still need selectWorkspace
       if (info.socialId == null) {
@@ -72,6 +82,7 @@ async function connect (): Promise<ConnectionState> {
       }
       endpoint = wsInfo.endpoint
       wsToken = wsInfo.token
+      workspaceUuid = String(wsInfo.workspace ?? '')
     } else {
       throw new Error('Token auth: unexpected response from getLoginInfoByToken. Token may be incomplete.')
     }
@@ -104,6 +115,7 @@ async function connect (): Promise<ConnectionState> {
 
     socialId = loginInfo.socialId as PersonId
     endpoint = wsInfo.endpoint
+    workspaceUuid = String(wsInfo.workspace ?? '')
     wsToken = wsInfo.token
   }
 
@@ -114,7 +126,7 @@ async function connect (): Promise<ConnectionState> {
   // Build workspace-scoped account client for member lookups
   const accountClient = getRawAccountClient(accountsUrl, wsToken)
 
-  return { txClient, rawConnection, accountClient }
+  return { txClient, rawConnection, accountClient, wsToken, workspaceUuid }
 }
 
 export async function closeConnection (): Promise<void> {

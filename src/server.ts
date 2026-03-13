@@ -4,7 +4,7 @@ import { listIssues, getIssue, createIssue, updateIssue, deleteIssue } from './t
 import { addComment } from './tools/comments'
 import { listMembers } from './tools/members'
 import { listMilestones, createMilestone } from './tools/milestones'
-import { listTeamspaces, listDocuments } from './tools/documents'
+import { listTeamspaces, listDocuments, getDocument, createDocument } from './tools/documents'
 import { searchIssues } from './tools/search'
 import { listLabels, createLabel, addLabel, removeLabel } from './tools/labels'
 import { addRelation, addBlockedBy, setParent } from './tools/relations'
@@ -21,6 +21,8 @@ import {
   ListMilestonesSchema,
   CreateMilestoneSchema,
   ListDocumentsSchema,
+  GetDocumentSchema,
+  CreateDocumentSchema,
   SearchIssuesSchema,
   ListLabelsSchema,
   CreateLabelSchema,
@@ -76,6 +78,8 @@ export function createServer (): McpServer {
   // Documents
   server.tool('list_teamspaces', 'List all document teamspaces in the workspace', {}, listTeamspaces)
   server.tool('list_documents', 'List documents in a teamspace', ListDocumentsSchema.shape, listDocuments)
+  server.tool('get_document', 'Get metadata and content of a document (content requires HULY_FRONT_URL env)', GetDocumentSchema.shape, getDocument)
+  server.tool('create_document', 'Create a new document in a teamspace', CreateDocumentSchema.shape, createDocument)
 
   // Search
   server.tool('search_issues', 'Full-text search across all issues', SearchIssuesSchema.shape, searchIssues)
