@@ -2,33 +2,39 @@
 
 > The most complete MCP server for [Huly](https://huly.app) — the open-source project management platform.
 
-Connects **Claude Desktop** (and any [MCP](https://modelcontextprotocol.io)-compatible client) directly to your Huly workspace. Manage issues, labels, relations, milestones, documents, and more — all via natural language.
+Connects **Claude Desktop** (and any [MCP](https://modelcontextprotocol.io)-compatible client) directly to your Huly workspace. Manage projects, issues, milestones, components, documents, labels, and more — all via natural language.
 
 ---
 
-## Tools (20 total)
+## Tools (28 total)
 
 | Category | Tool | Description |
 |----------|------|-------------|
 | **Projects** | `list_projects` | List all projects in the workspace |
 | | `get_project` | Get project details + available statuses |
-| **Issues** | `list_issues` | List issues with optional status/priority/assignee filters |
+| | `create_project` | Create a new tracker project with a unique identifier |
+| **Issues** | `list_issues` | List issues with optional status / priority filters |
 | | `get_issue` | Get full details of an issue (e.g. `PROJ-42`) |
 | | `create_issue` | Create a new issue |
 | | `update_issue` | Update title, status, priority, assignee, or due date |
 | | `delete_issue` | Permanently delete an issue by identifier |
 | **Comments** | `add_comment` | Add a comment to an issue |
-| **Labels** | `list_labels` | List all labels in the workspace with color + usage count |
+| **Labels** | `list_labels` | List all labels with color + usage count |
 | | `create_label` | Create a new label with an optional hex color |
-| | `add_label` | Add a label to an issue (auto-creates the label if it doesn't exist) |
+| | `add_label` | Add a label to an issue (auto-creates if it doesn't exist) |
 | | `remove_label` | Remove a label from an issue |
 | **Relations** | `add_relation` | Mark two issues as related (bidirectional) |
 | | `add_blocked_by` | Mark an issue as blocked by another issue |
 | | `set_parent` | Set or clear the parent epic of an issue |
 | **Members** | `list_members` | List workspace members |
 | **Milestones** | `list_milestones` | List milestones for a project |
+| | `create_milestone` | Create a milestone with a target date and status |
+| **Components** | `list_components` | List components (sub-areas) in a project |
+| | `create_component` | Create a new component with optional lead |
 | **Documents** | `list_teamspaces` | List document teamspaces |
 | | `list_documents` | List documents in a teamspace |
+| | `get_document` | Get document metadata + content (see [Document content](#document-content)) |
+| | `create_document` | Create a new document in a teamspace |
 | **Search** | `search_issues` | Full-text search across all issues |
 
 ---
@@ -42,30 +48,17 @@ Connects **Claude Desktop** (and any [MCP](https://modelcontextprotocol.io)-comp
 
 ## Quick Start
 
-### 1. Install
+### 1. Install via npx (easiest)
 
 ```bash
-git clone https://github.com/varaprasadreddy9676/huly-mcp.git
-cd huly-mcp
-npm install
-npm run build
+npx huly-mcp-sdk setup
 ```
 
-### 2. Authenticate
-
-Run the interactive setup wizard — it sends a one-time code to your email (works for Google/GitHub SSO accounts too):
-
-```bash
-npm run setup
-```
-
-The wizard will ask for your email address and workspace slug, send a 6-digit OTP to your inbox, and write a `.env` file automatically.
+This runs the interactive setup wizard — sends a one-time code to your email (works for Google/GitHub SSO accounts too) and writes your `.env` file automatically.
 
 **Your workspace slug** is the part of your Huly URL after the domain: `huly.app/`**`myteam`** → slug is `myteam`.
 
-> If you prefer, you can write `.env` manually — see [Manual Auth](#manual-auth) below.
-
-### 3. Configure Claude Desktop
+### 2. Configure Claude Desktop
 
 Add this to your Claude Desktop config:
 
@@ -76,10 +69,10 @@ Add this to your Claude Desktop config:
 {
   "mcpServers": {
     "huly": {
-      "command": "node",
-      "args": ["/absolute/path/to/huly-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["huly-mcp-sdk"],
       "env": {
-        "HULY_TOKEN": "paste-token-from-.env-here",
+        "HULY_TOKEN": "paste-token-here",
         "HULY_WORKSPACE": "your-workspace-slug"
       }
     }
@@ -89,32 +82,59 @@ Add this to your Claude Desktop config:
 
 Restart Claude Desktop after saving.
 
+> **Alternative (clone & build):**
+> ```bash
+> git clone https://github.com/varaprasadreddy9676/huly-mcp.git
+> cd huly-mcp && npm install && npm run build
+> ```
+> Then use `"command": "node", "args": ["/absolute/path/to/huly-mcp/dist/index.js"]` in your config.
+
 ---
 
 ## Example Prompts
 
-**Issues:**
+**Projects & issues:**
+- *"Create a new project called 'Mobile App' with identifier MOBILE"*
 - *"List all in-progress issues in the PROJ project"*
 - *"Create a high-priority issue in PROJ titled 'Fix login timeout'"*
 - *"Update PROJ-42 status to Done and assign it to Sarah"*
 - *"Search for issues related to authentication"*
 - *"Add a comment to PROJ-15 saying the fix is deployed"*
 
-**Labels:**
-- *"List all labels in my workspace"*
+**Milestones & components:**
+- *"Create a milestone 'v2.0 Launch' in PROJ with target date 2026-06-01"*
+- *"List milestones for the PROJ project"*
+- *"Create a component called 'Auth' in PROJ"*
+- *"List all components in PROJ"*
+
+**Labels & relations:**
 - *"Add the label 'bug' to PROJ-42"*
 - *"Create a label called 'backend' with color #3b82f6"*
-- *"Remove the 'wontfix' label from PROJ-10"*
-
-**Relations:**
 - *"Mark PROJ-55 as blocked by PROJ-12"*
-- *"Mark PROJ-30 and PROJ-31 as related"*
 - *"Set PROJ-42 as a subtask of PROJ-5"*
 
-**Other:**
-- *"List all projects and their member counts"*
-- *"Show milestones for the PROJ project"*
+**Documents:**
 - *"List all documents in the Engineering teamspace"*
+- *"Create a document called 'API Design' in the Engineering teamspace"*
+- *"Get the content of document abc123"*
+
+---
+
+## Document Content
+
+Document content in Huly is stored in a collaborative editing layer (not inline in the database). `get_document` always returns full metadata. To also fetch and read the **text content**, set the optional `HULY_FRONT_URL` env var:
+
+```json
+"env": {
+  "HULY_TOKEN": "...",
+  "HULY_WORKSPACE": "myteam",
+  "HULY_FRONT_URL": "https://front.huly.app"
+}
+```
+
+For **self-hosted** Huly, set `HULY_FRONT_URL` to your own front service URL (e.g. `http://localhost:8083`).
+
+Without `HULY_FRONT_URL`, `get_document` still returns the title, teamspace, comments, snapshots count, and the blob reference ID.
 
 ---
 
@@ -137,13 +157,11 @@ Improve performance,Urgent,,2025-05-01
 
 Required column: `title`. Optional: `priority` (Urgent/High/Medium/Low), `status` (must match a status name in the project), `dueDate` (YYYY-MM-DD).
 
-Auth is read from your `.env` file automatically.
-
 ---
 
 ## Manual Auth
 
-If you prefer to set up `.env` by hand, create a `.env` file in the project root:
+Create a `.env` file in the project root:
 
 **Option A — Token (recommended for all account types):**
 
@@ -152,10 +170,9 @@ HULY_WORKSPACE=your-workspace-slug
 HULY_TOKEN=your-token-here
 ```
 
-To get a token without the setup wizard:
-1. Go to [huly.app](https://huly.app) → open browser DevTools → Application → Local Storage → `https://huly.app` → copy the `token` value.
+To get a token: go to [huly.app](https://huly.app) → open browser DevTools → Application → Local Storage → `https://huly.app` → copy the `token` value.
 
-> Tokens expire after some time. If you get an auth error, run `npm run setup` again or refresh the token from DevTools.
+> Tokens expire after some time. If you get an auth error, run `npx huly-mcp-sdk setup` again or refresh the token from DevTools.
 
 **Option B — Email + password:**
 
@@ -171,6 +188,7 @@ HULY_WORKSPACE=your-workspace-slug
 
 ```bash
 HULY_ACCOUNTS_URL=https://your-huly-instance.com/account
+HULY_FRONT_URL=https://your-huly-instance.com
 ```
 
 ---
@@ -181,6 +199,14 @@ HULY_ACCOUNTS_URL=https://your-huly-instance.com/account
 - **Lazy init** — connects on the first tool call so auth errors surface clearly in Claude
 - **Dual auth** — OTP token (works for Google/GitHub SSO) or email + password
 - **Stdio transport** — standard MCP transport compatible with Claude Desktop and any MCP client
+
+---
+
+## Links
+
+- npm: https://www.npmjs.com/package/huly-mcp-sdk
+- GitHub: https://github.com/varaprasadreddy9676/huly-mcp
+- MCP Registry: https://registry.modelcontextprotocol.io (search "huly-mcp")
 
 ---
 
