@@ -1,7 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { listProjects, getProject, createProject } from './tools/projects'
 import { listIssues, getIssue, createIssue, updateIssue, deleteIssue } from './tools/issues'
-import { addComment } from './tools/comments'
+import { addComment, listComments } from './tools/comments'
+import { logTime } from './tools/log-time'
 import { listMembers } from './tools/members'
 import { listMilestones, createMilestone } from './tools/milestones'
 import { listTeamspaces, listDocuments, getDocument, createDocument } from './tools/documents'
@@ -18,6 +19,8 @@ import {
   UpdateIssueSchema,
   DeleteIssueSchema,
   AddCommentSchema,
+  ListCommentsSchema,
+  LogTimeSchema,
   ListMilestonesSchema,
   CreateMilestoneSchema,
   ListDocumentsSchema,
@@ -36,7 +39,7 @@ import {
 } from './schemas'
 
 export function createServer (): McpServer {
-  const server = new McpServer({ name: 'huly-mcp', version: '0.3.0' })
+  const server = new McpServer({ name: 'huly-mcp', version: '0.4.0' })
 
   // Projects
   server.tool('list_projects', 'List all projects in the Huly workspace', {}, listProjects)
@@ -47,11 +50,15 @@ export function createServer (): McpServer {
   server.tool('list_issues', 'List issues in a project with optional filters', ListIssuesSchema.shape, listIssues)
   server.tool('get_issue', 'Get full details of an issue by identifier (e.g. "PROJ-123")', GetIssueSchema.shape, getIssue)
   server.tool('create_issue', 'Create a new issue in a project', CreateIssueSchema.shape, createIssue)
-  server.tool('update_issue', 'Update an existing issue (title, status, priority, due date, assignee)', UpdateIssueSchema.shape, updateIssue)
+  server.tool('update_issue', 'Update an existing issue (title, status, priority, due date, assignee, component, milestone)', UpdateIssueSchema.shape, updateIssue)
   server.tool('delete_issue', 'Permanently delete an issue by identifier (e.g. "PROJ-123")', DeleteIssueSchema.shape, deleteIssue)
 
   // Comments
   server.tool('add_comment', 'Add a comment to an issue', AddCommentSchema.shape, addComment)
+  server.tool('list_comments', 'List all comments on an issue', ListCommentsSchema.shape, listComments)
+
+  // Time tracking
+  server.tool('log_time', 'Log hours spent on an issue', LogTimeSchema.shape, logTime)
 
   // Labels
   server.tool('list_labels', 'List all labels in the workspace', ListLabelsSchema.shape, listLabels)

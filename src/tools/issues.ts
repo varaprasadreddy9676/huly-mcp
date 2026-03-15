@@ -203,6 +203,26 @@ export const updateIssue = wrapToolHandler<z.infer<typeof UpdateIssueSchema>>(as
     }
   }
 
+  if (args.componentLabel !== undefined) {
+    if (args.componentLabel === null) {
+      updates.component = null
+    } else {
+      const component = await client.findOne(tracker.class.Component, { space: issue.space, label: args.componentLabel })
+      if (component == null) throw new Error(`Component '${args.componentLabel}' not found in this project.`)
+      updates.component = component._id
+    }
+  }
+
+  if (args.milestoneLabel !== undefined) {
+    if (args.milestoneLabel === null) {
+      updates.milestone = null
+    } else {
+      const milestone = await client.findOne(tracker.class.Milestone, { space: issue.space, label: args.milestoneLabel })
+      if (milestone == null) throw new Error(`Milestone '${args.milestoneLabel}' not found in this project.`)
+      updates.milestone = milestone._id
+    }
+  }
+
   if (Object.keys(updates).length === 0) return `No changes made to ${args.identifier}.`
 
   await client.updateDoc(tracker.class.Issue, issue.space, issue._id, updates)

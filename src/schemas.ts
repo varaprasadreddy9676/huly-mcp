@@ -35,7 +35,9 @@ export const UpdateIssueSchema = z.object({
   statusName: z.string().optional().describe('New status name'),
   priority: PriorityEnum.optional().describe('New priority'),
   dueDate: z.string().nullable().optional().describe('New due date (ISO 8601) or null to clear'),
-  assignee: z.string().nullable().optional().describe('Assignee name (first/last/full) or null to unassign')
+  assignee: z.string().nullable().optional().describe('Assignee name (first/last/full) or null to unassign'),
+  componentLabel: z.string().optional().describe('Component name to assign, or null to unassign'),
+  milestoneLabel: z.string().nullable().optional().describe('Milestone name to assign, or null to clear')
 })
 
 export const AddCommentSchema = z.object({
@@ -126,4 +128,15 @@ export const AddBlockedBySchema = z.object({
 export const SetParentSchema = z.object({
   identifier: z.string().describe('Child issue identifier, e.g. "PROJ-123"'),
   parentIdentifier: z.string().nullable().optional().describe('Parent issue identifier, or null to clear parent')
+})
+
+export const ListCommentsSchema = z.object({
+  identifier: z.string().describe('Issue identifier, e.g. "PROJ-123"'),
+  limit: z.number().int().min(1).max(100).default(20).describe('Max comments to return')
+})
+
+export const LogTimeSchema = z.object({
+  identifier: z.string().describe('Issue identifier, e.g. "PROJ-123"'),
+  hours: z.number().positive().describe('Hours spent (e.g. 2.5)'),
+  description: z.string().optional().describe('What was done (optional note)')
 })
