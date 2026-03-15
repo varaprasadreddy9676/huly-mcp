@@ -6,7 +6,7 @@ Connects **Claude Desktop** (and any [MCP](https://modelcontextprotocol.io)-comp
 
 ---
 
-## Tools (28 total)
+## Tools (31 total)
 
 | Category | Tool | Description |
 |----------|------|-------------|
@@ -16,9 +16,11 @@ Connects **Claude Desktop** (and any [MCP](https://modelcontextprotocol.io)-comp
 | **Issues** | `list_issues` | List issues with optional status / priority filters |
 | | `get_issue` | Get full details of an issue (e.g. `PROJ-42`) |
 | | `create_issue` | Create a new issue |
-| | `update_issue` | Update title, status, priority, assignee, or due date |
+| | `update_issue` | Update title, status, priority, assignee, due date, component, milestone |
 | | `delete_issue` | Permanently delete an issue by identifier |
 | **Comments** | `add_comment` | Add a comment to an issue |
+| | `list_comments` | List all comments on an issue |
+| **Time Tracking** | `log_time` | Log hours spent on an issue |
 | **Labels** | `list_labels` | List all labels with color + usage count |
 | | `create_label` | Create a new label with an optional hex color |
 | | `add_label` | Add a label to an issue (auto-creates if it doesn't exist) |
@@ -97,9 +99,10 @@ Restart Claude Desktop after saving.
 - *"Create a new project called 'Mobile App' with identifier MOBILE"*
 - *"List all in-progress issues in the PROJ project"*
 - *"Create a high-priority issue in PROJ titled 'Fix login timeout'"*
-- *"Update PROJ-42 status to Done and assign it to Sarah"*
+- *"Update PROJ-42 status to Done, assign it to Sarah, and move it to the Auth component"*
 - *"Search for issues related to authentication"*
 - *"Add a comment to PROJ-15 saying the fix is deployed"*
+- *"List all comments on PROJ-42 to see the discussion"*
 
 **Milestones & components:**
 - *"Create a milestone 'v2.0 Launch' in PROJ with target date 2026-06-01"*
@@ -112,6 +115,10 @@ Restart Claude Desktop after saving.
 - *"Create a label called 'backend' with color #3b82f6"*
 - *"Mark PROJ-55 as blocked by PROJ-12"*
 - *"Set PROJ-42 as a subtask of PROJ-5"*
+
+**Time tracking:**
+- *"Log 2.5 hours on PROJ-42 for the database refactor"*
+- *"Log 1 hour on PROJ-55 — Fixed bug in login form"*
 
 **Documents:**
 - *"List all documents in the Engineering teamspace"*
